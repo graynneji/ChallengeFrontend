@@ -18,6 +18,7 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data, isLoggedIn } = useSelector((state) => state.loginUser);
+  console.log(data);
   const { firstName, lastName } = data;
   const userName = `${firstName} ${lastName}`;
   console.log(data.email);
