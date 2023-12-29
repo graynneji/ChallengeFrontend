@@ -12,7 +12,6 @@ export const userLogout = createAsyncThunk(
       dispatch(userLoginReset());
       dispatch(userLoginInProgress(false));
     } catch ({ response }) {
-      console.log(response);
       dispatch(userLoginReset());
       dispatch(userLoginInProgress(false));
     }
