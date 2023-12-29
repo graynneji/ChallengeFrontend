@@ -9,13 +9,10 @@ import {
   Spinner,
   Box,
 } from "@chakra-ui/react";
-// import { Spinner } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import { sectorsData } from "../../app/thunks/sectorsThunk";
 import { postSelection } from "../../app/thunks/userSelectionThunk";
 import { useToast } from "@chakra-ui/react";
-
-// import { uniqBy } from "lodash";
 
 const Header = lazy(() => import("components/Header/Header"));
 
@@ -103,10 +100,7 @@ const Dashboard = () => {
 
   const handleSelectChange = (selectedOption) => {
     setSelectedOption(selectedOption);
-    // Handle your selection logic here
   };
-
-  //
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -117,6 +111,7 @@ const Dashboard = () => {
     }));
   };
 
+  //Handle save
   const handleSave = () => {
     if (!formData || !selectedOption) {
       console.error("formData or selectedOption is undefined");
