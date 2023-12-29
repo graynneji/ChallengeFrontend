@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import {
   Avatar,
@@ -18,16 +18,19 @@ const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { data, isLoggedIn } = useSelector((state) => state.loginUser);
-  console.log(data);
   const { firstName, lastName } = data;
   const userName = `${firstName} ${lastName}`;
-  console.log(data.email);
 
   const logoutUser = () => {
-    console.log("triggered logout");
     dispatch(userLogout(data));
-    navigate("/");
   };
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      // User is logged out, navigate to the login page
+      navigate("/");
+    }
+  }, [isLoggedIn, navigate]);
 
   return (
     <Grid templateColumns="repeat(5, 1fr)" gap={6} m="10px">

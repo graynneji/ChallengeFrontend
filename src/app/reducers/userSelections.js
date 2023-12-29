@@ -21,11 +21,15 @@ const postUsersSelections = createSlice({
     postUserInSuccess: (state, { payload }) => {
       state.fullName = payload.data.fullName;
       state.sector = payload.data.sector;
-      state.agree = payload.agree;
+      state.agree = payload.data.agree;
+      state.message = payload.data.message;
+      state.isSaved = true;
+      state.error = false;
     },
     postUserInFailed: (state, { payload }) => {
-      state.isSaved = payload.isSaved;
+      state.isSaved = false;
       state.status = 400;
+      state.error = true;
       state.message = payload.message;
     },
   },

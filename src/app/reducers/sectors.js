@@ -3,8 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   loading: false,
   sectors: null,
-  error: null,
-  selections: null,
+  error: false,
+
+  selections: [],
 };
 
 const loadSectors = createSlice({
@@ -12,13 +13,13 @@ const loadSectors = createSlice({
   initialState,
   reducers: {
     fetchSectorsStart: (state) => {
-      state.loading = false;
+      state.loading = true;
     },
 
     fetchSectorsSuccess: (state, action) => {
       state.loading = false;
       state.sectors = action.payload[0].sectors.sectors;
-      state.error = null;
+      state.error = false;
     },
     fetchSectorsFailure: (state, action) => {
       state.loading = false;

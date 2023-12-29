@@ -13,6 +13,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { sectorsData } from "../../app/thunks/sectorsThunk";
 import { postSelection } from "../../app/thunks/userSelectionThunk";
+import { useToast } from "@chakra-ui/react";
 
 // import { uniqBy } from "lodash";
 
@@ -20,30 +21,31 @@ const Header = lazy(() => import("components/Header/Header"));
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const { sectors, selections, loading, error } = useSelector(
+  const { sectors, selections } = useSelector(
     (state) => state.sectorsSelections
   );
-  // const { sectors } = useSelector((state) => state.sectors);
+  const { fullName, sector, agree, message, error } = useSelector(
+    (state) => state.userSelections
+  );
   const [selectedOption, setSelectedOption] = useState(null);
   const [formData, setFormData] = useState({
     fullName: "",
-    agreed: false,
+    agree: false,
   });
-  console.log(formData);
+  const toast = useToast();
   useEffect(
     function () {
       dispatch(sectorsData());
     },
-    [dispatch]
+    [dispatch, fullName, sector, agree]
   );
-  console.log(sectors, selections);
 
   useEffect(
     function () {
       if (selections) {
         setFormData({
           fullName: selections.fullName || "",
-          agreed: selections.agree || false,
+          agree: selections.agree || false,
         });
 
         setSelectedOption({
@@ -54,6 +56,26 @@ const Dashboard = () => {
     },
     [selections]
   );
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error",
+        description: message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else if (!error && message !== "") {
+      toast({
+        title: "Success",
+        description: message,
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [message, error, toast]);
 
   const memoizedData = useMemo(() => sectors, [sectors]);
 
@@ -96,8 +118,19 @@ const Dashboard = () => {
   };
 
   const handleSave = () => {
-    // Handle save logic here using formData
-    dispatch(postSelection());
+    if (!formData || !selectedOption) {
+      console.error("formData or selectedOption is undefined");
+      return;
+    }
+
+    const valuesToSave = {
+      ...formData,
+      sector: selectedOption.value,
+    };
+    console.log(valuesToSave);
+    // Dispatch the postSelection thunk with the combined values
+    dispatch(postSelection({ values: valuesToSave }));
+    toast.closeAll();
   };
 
   //
@@ -140,8 +173,8 @@ const Dashboard = () => {
         <Box mb={4}>
           <FormControl>
             <Checkbox
-              name="agreed"
-              isChecked={formData.agreed}
+              name="agree"
+              isChecked={formData.agree}
               onChange={handleChange}
             >
               I agree to the terms and conditions

@@ -14,7 +14,7 @@ const POST_SELECTION_URL = `${process.env.REACT_APP_URL}${process.env.REACT_APP_
 
 export const sectorsData = createAsyncThunk(
   "sectors",
-  async (_, { dispatch }) => {
+  async (_, { dispatch, getState }) => {
     dispatch(fetchSectorsStart(true));
     try {
       const response = await axios.get(SECTORS_URL);
@@ -27,8 +27,14 @@ export const sectorsData = createAsyncThunk(
 
     dispatch(fetchSelectionsStart(true));
     try {
-      const selectionsResponse = await axios.get(POST_SELECTION_URL);
-      dispatch(fetchSelectionsSuccess(selectionsResponse.data));
+      const { data } = getState().loginUser;
+      const userId = data?.id;
+      if (userId) {
+        const selectionsResponse = await axios.get(
+          `${POST_SELECTION_URL}/${userId}`
+        );
+        dispatch(fetchSelectionsSuccess(selectionsResponse.data));
+      }
     } catch (selectionsError) {
       dispatch(fetchSelectionsFailure(selectionsError.message));
     }

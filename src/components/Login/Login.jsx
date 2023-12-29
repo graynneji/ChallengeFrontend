@@ -39,7 +39,6 @@ const Login = () => {
   const { isLoggedIn, error, message } = useSelector(
     (state) => state.loginUser
   );
-  useSelector((state) => console.log(state.loginUser));
 
   const onSubmit = (values, { setSubmitting }) => {
     dispatch(userLoginReset());

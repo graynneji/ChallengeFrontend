@@ -11,18 +11,50 @@ const POST_SELECTION_URL = `${process.env.REACT_APP_URL}${process.env.REACT_APP_
 
 export const postSelection = createAsyncThunk(
   "post/user/selections",
-  async ({ values, dispatch, getState }) => {
+  async (values, { dispatch, getState }) => {
     dispatch(postUserInProgress(true));
     try {
-      const { sectors, selections } = getState().sectorsSelection;
-      console.log(sectors, selections);
+      const { selections } = getState()?.sectorsSelections;
+      const { data } = getState()?.loginUser;
+
+      const userId = data?.id;
+
+      const valuesContainingUserId = {
+        ...values.values,
+        userId,
+      };
+
+      if (!userId) {
+        throw new Error("you are not logged in");
+      }
+
       if (!selections) {
-        const { data, status } = await axios.post(POST_SELECTION_URL, values);
-        dispatch(postUserInSuccess({ data, status }));
+        const responsePost = await axios.post(
+          POST_SELECTION_URL,
+          // valuesContainingUserId
+          JSON.stringify(valuesContainingUserId),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        dispatch(postUserInSuccess(responsePost));
         dispatch(postUserInProgress(false));
       } else {
-        const { data, status } = await axios.patch(POST_SELECTION_URL, values);
-        dispatch(postUserInSuccess({ data, status }));
+        const responsePatch = await axios.patch(
+          `${POST_SELECTION_URL}/${userId}`,
+          // values
+          JSON.stringify(values.values),
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        // dispatch(postUserInSuccess({ data, status }));
+        dispatch(postUserInSuccess(responsePatch));
         dispatch(postUserInProgress(false));
       }
     } catch ({ response }) {
