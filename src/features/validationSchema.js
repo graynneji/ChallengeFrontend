@@ -31,3 +31,13 @@ export const loginFormSchema = yup.object().shape({
     .required("Required !"),
   password: yup.string().required("Required !"),
 });
+
+export const userSelectionFormSchema = yup.object().shape({
+  fullName: yup
+    .string()
+    .min(3, "Miniumum 3 characters")
+    .required("Full Name is required"),
+  agree: yup
+    .boolean()
+    .oneOf([true], "You must agree to the terms and conditions"),
+});

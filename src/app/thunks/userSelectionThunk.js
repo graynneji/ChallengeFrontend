@@ -40,7 +40,7 @@ export const postSelection = createAsyncThunk(
           }
         );
 
-        dispatch(postUserInSuccess(responsePost));
+        dispatch(postUserInSuccess(responsePost.data));
         dispatch(postUserInProgress(false));
       } else {
         const responsePatch = await axios.patch(
@@ -54,7 +54,7 @@ export const postSelection = createAsyncThunk(
           }
         );
         // dispatch(postUserInSuccess({ data, status }));
-        dispatch(postUserInSuccess(responsePatch));
+        dispatch(postUserInSuccess(responsePatch.data));
         dispatch(postUserInProgress(false));
       }
     } catch ({ response }) {

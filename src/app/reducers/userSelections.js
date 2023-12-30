@@ -22,7 +22,7 @@ const postUsersSelections = createSlice({
       state.fullName = payload.data.fullName;
       state.sector = payload.data.sector;
       state.agree = payload.data.agree;
-      state.message = payload.data.message;
+      state.message = payload.message;
       state.isSaved = true;
       state.error = false;
     },

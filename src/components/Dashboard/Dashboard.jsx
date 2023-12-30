@@ -13,6 +13,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { sectorsData } from "../../app/thunks/sectorsThunk";
 import { postSelection } from "../../app/thunks/userSelectionThunk";
 import { useToast } from "@chakra-ui/react";
+import { useFormik } from "formik";
+import styles from "App.module.css";
+import { userSelectionFormSchema } from "features/validationSchema";
 
 const Header = lazy(() => import("components/Header/Header"));
 
@@ -21,14 +24,11 @@ const Dashboard = () => {
   const { sectors, selections } = useSelector(
     (state) => state.sectorsSelections
   );
-  const { fullName, sector, agree, message, error } = useSelector(
+  const { fullName, sector, agree, message, error, processing } = useSelector(
     (state) => state.userSelections
   );
   const [selectedOption, setSelectedOption] = useState(null);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    agree: false,
-  });
+
   const toast = useToast();
   useEffect(
     function () {
@@ -40,7 +40,7 @@ const Dashboard = () => {
   useEffect(
     function () {
       if (selections) {
-        setFormData({
+        setValues({
           fullName: selections.fullName || "",
           agree: selections.agree || false,
         });
@@ -102,33 +102,33 @@ const Dashboard = () => {
     setSelectedOption(selectedOption);
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const {
+    values,
+    handleBlur,
+    setValues,
+    handleSubmit,
+    errors,
+    touched,
+    handleChange,
+  } = useFormik({
+    initialValues: {
+      fullName: "",
+      agree: false,
+      sector: "",
+    },
+    validationSchema: userSelectionFormSchema,
+    onSubmit: (formValues) => {
+      const valuesToSave = {
+        ...formValues,
+        sector: selectedOption.value,
+      };
+      console.log(valuesToSave);
+      // Dispatch the postSelection thunk with the combined values
+      dispatch(postSelection({ values: valuesToSave }));
+      toast.closeAll();
+    },
+  });
 
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  //Handle save
-  const handleSave = () => {
-    if (!formData || !selectedOption) {
-      console.error("formData or selectedOption is undefined");
-      return;
-    }
-
-    const valuesToSave = {
-      ...formData,
-      sector: selectedOption.value,
-    };
-    console.log(valuesToSave);
-    // Dispatch the postSelection thunk with the combined values
-    dispatch(postSelection({ values: valuesToSave }));
-    toast.closeAll();
-  };
-
-  //
   return (
     <Suspense
       fallback={
@@ -150,9 +150,14 @@ const Dashboard = () => {
             <Input
               type="text"
               name="fullName"
-              value={formData.fullName}
+              value={values.fullName}
               onChange={handleChange}
+              onBlur={handleBlur}
+              isInvalid={touched.fullName && errors.fullName}
             />
+            {touched.fullName && (
+              <p className={styles.errorStyles}>{errors.fullName}</p>
+            )}
           </FormControl>
         </Box>
         <Box mb={4}>
@@ -169,16 +174,21 @@ const Dashboard = () => {
           <FormControl>
             <Checkbox
               name="agree"
-              isChecked={formData.agree}
+              isChecked={values.agree}
               onChange={handleChange}
+              onBlur={handleBlur}
+              isInvalid={touched.agree && errors.agree}
             >
               I agree to the terms and conditions
             </Checkbox>
+            {touched.agree && (
+              <p className={styles.errorStyles}>{errors.agree}</p>
+            )}
           </FormControl>
         </Box>
 
-        <Button colorScheme="blue" mr={3} onClick={handleSave}>
-          Save
+        <Button colorScheme="blue" mr={3} onClick={handleSubmit}>
+          {processing ? "Saving..." : "Save"}
         </Button>
       </Box>
     </Suspense>
