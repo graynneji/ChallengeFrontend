@@ -122,7 +122,7 @@ const Dashboard = () => {
         ...formValues,
         sector: selectedOption.value,
       };
-      console.log(valuesToSave);
+
       // Dispatch the postSelection thunk with the combined values
       dispatch(postSelection({ values: valuesToSave }));
       toast.closeAll();
@@ -168,6 +168,9 @@ const Dashboard = () => {
               onChange={handleSelectChange}
               options={flattenedOptions}
             />
+            {selectedOption && (
+              <p className={styles.errorStyles}>{errors.sector}</p>
+            )}
           </FormControl>
         </Box>
         <Box mb={4}>

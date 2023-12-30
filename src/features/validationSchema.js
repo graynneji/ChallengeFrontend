@@ -37,6 +37,10 @@ export const userSelectionFormSchema = yup.object().shape({
     .string()
     .min(3, "Miniumum 3 characters")
     .required("Full Name is required"),
+  sector: yup
+    .string()
+    .min(3, "Miniumum 3 characters")
+    .required("Sector is required"),
   agree: yup
     .boolean()
     .oneOf([true], "You must agree to the terms and conditions"),
