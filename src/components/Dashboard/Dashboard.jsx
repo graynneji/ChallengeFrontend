@@ -30,6 +30,32 @@ const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const toast = useToast();
+    const {
+    values,
+    handleBlur,
+    setValues,
+    handleSubmit,
+    errors,
+    touched,
+    handleChange,
+  } = useFormik({
+    initialValues: {
+      fullName: "",
+      agree: false,
+      sector: "",
+    },
+    validationSchema: userSelectionFormSchema,
+    onSubmit: (formValues) => {
+      const valuesToSave = {
+        ...formValues,
+        sector: selectedOption.value,
+      };
+
+      // Dispatch the postSelection thunk with the combined values
+      dispatch(postSelection({ values: valuesToSave }));
+      toast.closeAll();
+    },
+  });
   useEffect(
     function () {
       dispatch(sectorsData());
@@ -51,7 +77,7 @@ const Dashboard = () => {
         });
       }
     },
-    [selections]
+    [selections, setValues, setSelectedOption]
   );
 
   useEffect(() => {
@@ -102,32 +128,7 @@ const Dashboard = () => {
     setSelectedOption(selectedOption);
   };
 
-  const {
-    values,
-    handleBlur,
-    setValues,
-    handleSubmit,
-    errors,
-    touched,
-    handleChange,
-  } = useFormik({
-    initialValues: {
-      fullName: "",
-      agree: false,
-      sector: "",
-    },
-    validationSchema: userSelectionFormSchema,
-    onSubmit: (formValues) => {
-      const valuesToSave = {
-        ...formValues,
-        sector: selectedOption.value,
-      };
 
-      // Dispatch the postSelection thunk with the combined values
-      dispatch(postSelection({ values: valuesToSave }));
-      toast.closeAll();
-    },
-  });
 
   return (
     <Suspense
@@ -168,9 +169,9 @@ const Dashboard = () => {
               onChange={handleSelectChange}
               options={flattenedOptions}
             />
-            {selectedOption && (
+{/*             {selectedOption && (
               <p className={styles.errorStyles}>{errors.sector}</p>
-            )}
+            )} */}
           </FormControl>
         </Box>
         <Box mb={4}>
